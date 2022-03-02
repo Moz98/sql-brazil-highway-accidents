@@ -22,8 +22,9 @@ FROM CTE_TotalAccidents
 SELECT *
 FROM #TotalAccidents;
 
-------------------------------------- EDA ----------------------------
--- By Uf
+------------------------------------- EDA GERAL ----------------------------
+-- UF
+
 SELECT DISTINCT(uf)
 FROM #TotalAccidents
 ORDER BY uf
@@ -34,7 +35,7 @@ GROUP BY uf
 ORDER BY 2 DESC -- DF And ES has a similar number of vehicles and extension and a difference between the accidents
 
 
--- By Dates
+-- DATES 
 
 -- Most Commum Dates of Accidents
 SELECT dia_semana, COUNT(dia_semana) As DayOfTheWeek
@@ -49,26 +50,41 @@ ORDER BY data_inversa, horario -- The day switch on Mid Night
 SELECT data_inversa,horario
 FROM #TotalAccidents
 WHERE dia_semana = 'segunda-feira'
-ORDER BY data_inversa, horario -- Cleaning Up to see common hour of accidents 
+ORDER BY data_inversa, horario 
+
+-- Hour
+--- Cleaning Up to see common hour of accidents
 
 
-SELECT uf, dia_semana, COUNT(dia_semana) AS MostCommon
-FROM #TotalAccidents
-WHERE uf = 'MG'
-GROUP BY uf, dia_semana
-ORDER BY MostCommon DESC -- Como fazer para retornar o dia mais comum de acidentes em cada Estado ?_?
+-- CLIMATE CONDITIONS
 
-
--- Climate Conditions
 SELECT DISTINCT(fase_dia)
 FROM #TotalAccidents
 
+-- Most Commmom Conditions
+
+--- Cleaning up to adjust fase_dia with horario, has some incosistencies **(Partition By)
+
+SELECT fase_dia, COUNT(fase_dia) as MostCommonPhase
+FROM #TotalAccidents
+GROUP BY fase_dia
+ORDER BY 2 DESC
+
 SELECT fase_dia, horario
 FROM #TotalAccidents
-ORDER BY horario -- Cleaning up to adjust fase_dia with horario, has some incosistencies (Partition By)
+ORDER BY horario 
+
+
+-- Most Commmom Conditions
+--- Cleaning up fase_dia where has a inconsistence with the hour
 
 SELECT DISTINCT(condicao_metereologica)
 FROM #TotalAccidents
+
+SELECT condicao_metereologica, COUNT(condicao_metereologica) As MostCommonCondition
+FROM #TotalAccidents
+GROUP BY condicao_metereologica
+ORDER BY 2 DESC
 
 SELECT fase_dia, condicao_metereologica, horario
 FROM #TotalAccidents
@@ -81,17 +97,15 @@ condicao_metereologica = 'Sol' -- Cleaning up
 SELECT DISTINCT(tipo_acidente)
 FROM #TotalAccidents
 
-SELECT tipo_acidente
-FROM #TotalAccidents
-WHERE tipo_acidente IS NULL -- = 0
-
 --classification of accidents
 SELECT DISTINCT(classificacao_acidente)
 FROM #TotalAccidents 
 
-SELECT classificacao_acidente
+SELECT classificacao_acidente, feridos
 FROM #TotalAccidents
-WHERE classificacao_acidente IS NULL -- = 0
+WHERE classificacao_acidente = 'Sem Vítimas' AND
+feridos <> 0
+ORDER BY Feridos
 
 SELECT classificacao_acidente, feridos
 FROM #TotalAccidents
@@ -110,5 +124,36 @@ FROM #TotalAccidents
 GROUP BY classificacao_acidente
 ORDER BY 2 DESC
 
+-- NULL VALUES
+
 SELECT *
 FROM #TotalAccidents
+
+SELECT uf, municipio, latitude, longitude --Locations
+FROM #TotalAccidents
+WHERE uf is NULL OR
+municipio IS NULL OR
+latitude IS NULL OR
+longitude IS NULL
+
+SELECT dia_semana,data_inversa,horario -- Dates
+FROM #TotalAccidents
+WHERE dia_semana IS NULL OR
+data_inversa IS NULL or
+horario IS NULL
+
+SELECT causa_acidente, tipo_acidente, classificacao_acidente, uop --Type Of Accident
+FROM #TotalAccidents
+WHERE causa_acidente is NULL OR
+tipo_acidente is NULL OR
+classificacao_acidente IS NULL
+
+SELECT fase_dia, sentido_via, condicao_metereologica, tipo_pista, tracado_via -- Conditions
+FROM #TotalAccidents
+WHERE fase_dia IS NULL OR
+sentido_via IS NULL OR
+condicao_metereologica IS NULL OR
+tipo_pista IS NULL OR
+tracado_via IS NULL
+
+
