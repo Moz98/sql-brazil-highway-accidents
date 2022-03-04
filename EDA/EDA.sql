@@ -36,6 +36,8 @@ ORDER BY 2 DESC -- DF And ES has a similar number of vehicles and extension and 
 
 
 -- DATES 
+-- Cleaning up to see common day, month, year (Ok)
+
 
 -- Most Commum Dates of Accidents
 SELECT dia_semana, COUNT(dia_semana) As DayOfTheWeek
@@ -53,8 +55,7 @@ WHERE dia_semana = 'segunda-feira'
 ORDER BY data_inversa, horario 
 
 -- Hour
---- Cleaning Up to see common hour of accidents
-
+--- Cleaning Up to see common hour of accidents ()
 
 -- CLIMATE CONDITIONS
 
@@ -63,7 +64,7 @@ FROM #TotalAccidents
 
 -- Most Commmom Conditions
 
---- Cleaning up to adjust fase_dia with horario, has some incosistencies **(Partition By)
+--- Cleaning up to adjust fase_dia with horario, has some incosistencies **(Partition By) ()
 
 SELECT fase_dia, COUNT(fase_dia) as MostCommonPhase
 FROM #TotalAccidents
