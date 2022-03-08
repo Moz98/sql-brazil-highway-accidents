@@ -55,7 +55,7 @@ WHERE dia_semana = 'segunda-feira'
 ORDER BY data_inversa, horario 
 
 -- Hour
---- Cleaning Up to see common hour of accidents ()
+--- Cleaning Up to see common hour of accidents (Ok)
 
 -- CLIMATE CONDITIONS
 

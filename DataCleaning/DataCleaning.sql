@@ -1,4 +1,4 @@
-------------------------------- DATA CLEANING ------------------------------
+--================ DATA CLEANING ======================---
 DROP TABLE IF EXISTS #DataCleaningTotalAccidents
 
 WITH CTE_TotalAccidents As (
@@ -31,7 +31,7 @@ ADD Data_Inversa2 DATE;
 UPDATE #DataCleaningTotalAccidents
 SET data_inversa2 = CONVERT(DATE,data_inversa)
 
--- Separate Data_inversa in Day, Month and Year
+---=---= Separate Data_inversa in Day, Month and Year ---=---= 
 
 SELECT data_inversa2,
 DATEPART(DAY, data_inversa2) As Day,
@@ -67,7 +67,26 @@ WHERE Day IS NULL OR
 Month IS NULL OR
 Year IS NULL
 
--- HORARIO
+----- Year With Most Accidents -------
+SELECT Year, COUNT(Year)
+FROM #DataCleaningTotalAccidents
+GROUP BY Year
+ORDER BY 2 DESC
+
+----- Month With Most Accidents -------
+SELECT Month, COUNT(Month)
+FROM #DataCleaningTotalAccidents
+GROUP BY Month
+ORDER BY 2 DESC
+
+----- Day With Most Accidents -------
+SELECT Day, COUNT(Day)
+FROM #DataCleaningTotalAccidents
+GROUP BY Day
+ORDER BY 2 DESC
+
+
+--=---=---=---= HORARIO =---=---=---=---= 
 
 SELECT PARSENAME(CONVERT(nvarchar,CAST(horario AS TIME)), 2) AS newHour
 FROM #DataCleaningTotalAccidents
@@ -76,14 +95,53 @@ SELECT  DISTINCT(PARSENAME(CONVERT(nvarchar,CAST(horario AS TIME)), 2))
 FROM #DataCleaningTotalAccidents
 ORDER BY 1 ASC
 
----
+--- Common hour of accidents
 ALTER TABLE #DataCleaningTotalAccidents
 ADD newHour nvarchar(10)
 
 UPDATE #DataCleaningTotalAccidents
 SET newHour = PARSENAME(CONVERT(nvarchar,CAST(horario AS TIME)), 2)
 
---FASE-DIA
+SELECT newHour, COUNT(*) AS CommonHour
+FROM #DataCleaningTotalAccidents
+GROUP BY newHour
+ORDER BY 2 DESC
 
-SELECT horario, newHour
+
+---=---=---=---=  FASE-DIA = ---=---=---=---= 
+
+--> Plena Noite : Between 20:00:00 and 04:00:00
+--> Pleno dia : Between 07:00:00 and 16:00:00
+--> Anoitecer : Between 17:00:00 and 19:00:00
+--> Amanhecer : Between 05:00:00 and 06:00:00
+
+SELECT DISTINCT(fase_dia)
+FROM #DataCleaningTotalAccidents
+
+SELECT newHour, COUNT(DISTINCT(fase_dia)) as DifferentFase
+FROM #DataCleaningTotalAccidents
+GROUP BY newHour
+HAVING COUNT(DISTINCT(fase_dia)) > 1
+ORDER BY 2
+
+SELECT newHour, fase_dia -- Sample 
+FROM #DataCleaningTotalAccidents
+WHERE newHour = '16:40:00'
+
+
+-------  Cleaning --------------
+
+SELECT newHour
+FROM #DataCleaningTotalAccidents
+WHERE newHour LIKE '05%' OR
+newHour LIKE '06%'
+ORDER BY newHour
+
+
+------ UPDATING THE DATA -----------
+ALTER TABLE #DataCleaningTotalAccidents
+ADD newFase_dia nvarchar (20)
+
+
+SELECT *
 FROM #DataCleaningTotalAccidents
