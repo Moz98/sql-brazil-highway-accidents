@@ -118,10 +118,10 @@ ORDER BY 2 DESC
 SELECT DISTINCT(fase_dia)
 FROM #DataCleaningTotalAccidents
 
-SELECT newHour, COUNT(DISTINCT(fase_dia)) as DifferentFase
+SELECT newHour, COUNT(DISTINCT(fase_dia)) AS DifferentFase
 FROM #DataCleaningTotalAccidents
 GROUP BY newHour
-HAVING COUNT(DISTINCT(fase_dia)) > 1
+HAVING COUNT(DISTINCT(fase_dia)) <> 1
 ORDER BY 2
 
 SELECT newHour, fase_dia -- Sample 
@@ -131,10 +131,49 @@ WHERE newHour = '16:40:00'
 
 -------  Cleaning --------------
 
+--Amanhecer
 SELECT newHour
 FROM #DataCleaningTotalAccidents
-WHERE newHour LIKE '05%' OR
-newHour LIKE '06%'
+WHERE newHour LIKE '05%'
+OR newHour LIKE '06%'
+ORDER BY newHour
+
+--Pleno dia
+SELECT newHour
+FROM #DataCleaningTotalAccidents
+WHERE newHour LIKE '07%'
+OR newHour LIKE '08%'
+OR newHour LIKE '09%'
+OR newHour LIKE '10%'
+OR newHour LIKE '11%'
+OR newHour LIKE '12%'
+OR newHour LIKE '13%'
+OR newHour LIKE '14%'
+OR newHour LIKE '15%'
+OR newHour LIKE '16%'
+ORDER BY newHour
+
+
+--Anoitecer
+SELECT newHour
+FROM #DataCleaningTotalAccidents
+WHERE newHour LIKE '17%'
+OR newHour LIKE '18%'
+ORDER BY newHour
+
+--Pleno noite
+SELECT newHour
+FROM #DataCleaningTotalAccidents
+WHERE newHour LIKE '19%'
+OR newHour LIKE '20%'
+OR newHour LIKE '21%'
+OR newHour LIKE '22%'
+OR newHour LIKE '23%'
+OR newHour LIKE '00%'
+OR newHour LIKE '01%'
+OR newHour LIKE '02%'
+OR newHour LIKE '03%'
+OR newHour LIKE '04%'
 ORDER BY newHour
 
 
@@ -142,6 +181,89 @@ ORDER BY newHour
 ALTER TABLE #DataCleaningTotalAccidents
 ADD newFase_dia nvarchar (20)
 
+-- New Amanhecer
+UPDATE #DataCleaningTotalAccidents
+SET newFase_dia = 'Amanhecer'
+WHERE newHour LIKE '05%'
+OR newHour LIKE '06%'
+
+-- New Pleno dia
+UPDATE #DataCleaningTotalAccidents
+SET newFase_dia = 'Pleno dia'
+WHERE newHour LIKE '07%'
+OR newHour LIKE '08%'
+OR newHour LIKE '09%'
+OR newHour LIKE '10%'
+OR newHour LIKE '11%'
+OR newHour LIKE '12%'
+OR newHour LIKE '13%'
+OR newHour LIKE '14%'
+OR newHour LIKE '15%'
+OR newHour LIKE '16%'
+
+-- New Anoitecer
+UPDATE #DataCleaningTotalAccidents
+SET newFase_dia = 'Anoitecer'
+WHERE newHour LIKE '17%'
+OR newHour LIKE '18%'
+
+-- New Plena noite
+UPDATE #DataCleaningTotalAccidents
+SET newFase_dia = 'Plena noite'
+WHERE newHour LIKE '19%'
+OR newHour LIKE '20%'
+OR newHour LIKE '21%'
+OR newHour LIKE '22%'
+OR newHour LIKE '23%'
+OR newHour LIKE '00%'
+OR newHour LIKE '01%'
+OR newHour LIKE '02%'
+OR newHour LIKE '03%'
+OR newHour LIKE '04%'
+
+-- NULL & Inconsistences VERIFICATION --
 
 SELECT *
+FROM #DataCleaningTotalAccidents
+WHERE newFase_dia IS NULL
+
+SELECT newHour, COUNT(DISTINCT(newHour)) AS DifferentFase
+FROM #DataCleaningTotalAccidents
+GROUP BY newHour
+HAVING COUNT(DISTINCT(newHour)) <> 1
+ORDER BY 2
+
+---=---=---=---=  Condica_metereologica = ---=---=---=---= --
+SELECT DISTINCT(condicao_metereologica )
+FROM #DataCleaningTotalAccidents
+
+SELECT * 
+FROM #DataCleaningTotalAccidents
+WHERE condicao_metereologica = 'Neve'
+
+
+SELECT newFase_dia, condicao_metereologica, horario
+FROM #DataCleaningTotalAccidents
+WHERE newFase_dia = 'Plena noite'
+AND condicao_metereologica = 'Sol'
+ORDER BY 3 
+
+SELECT newFase_dia, condicao_metereologica, horario
+FROM #DataCleaningTotalAccidents
+WHERE newFase_dia = 'Anoitecer'
+AND condicao_metereologica = 'Sol'
+ORDER BY 3 DESC
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT * 
 FROM #DataCleaningTotalAccidents

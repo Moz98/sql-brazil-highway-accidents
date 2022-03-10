@@ -64,7 +64,7 @@ FROM #TotalAccidents
 
 -- Most Commmom Conditions
 
---- Cleaning up to adjust fase_dia with horario, has some incosistencies **(Partition By) ()
+--- Cleaning up to adjust fase_dia with horario (OK)
 
 SELECT fase_dia, COUNT(fase_dia) as MostCommonPhase
 FROM #TotalAccidents
