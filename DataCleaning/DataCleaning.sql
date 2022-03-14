@@ -234,28 +234,101 @@ HAVING COUNT(DISTINCT(newHour)) <> 1
 ORDER BY 2
 
 ---=---=---=---=  Condica_metereologica = ---=---=---=---= --
+-- New Column
+ALTER TABLE #DataCleaningTotalAccidents
+ADD newCondicao_metereologica nvarchar(50)
+
+UPDATE #DataCleaningTotalAccidents
+SET newCondicao_metereologica = condicao_metereologica
+
 SELECT DISTINCT(condicao_metereologica )
 FROM #DataCleaningTotalAccidents
+
+------ NEVE ------
+
+-- Teofilo Otoni = Nublado
+-- Teixeira de Freitas = Nublado ** Pelos dados metereológicos de duas regiões próximas é possível observar grande umidade e 0 preciptação
+-- Sinop = Céu Claro
 
 SELECT * 
 FROM #DataCleaningTotalAccidents
 WHERE condicao_metereologica = 'Neve'
 
+-- Teofilo Otoni
+SELECT * 
+FROM #DataCleaningTotalAccidents
+WHERE municipio = 'TEOFILO OTONI'
+AND Year = '2017'
+AND Month = '12'
+AND Day = '15'
 
-SELECT newFase_dia, condicao_metereologica, horario
+-- Teixeira de Freitas
+SELECT * 
+FROM #DataCleaningTotalAccidents
+WHERE municipio = 'TEIXEIRA DE FREITAS'
+AND Year = '2019'
+AND Month = '06'
+ORDER BY Day
+
+-- Sinop
+SELECT * 
+FROM #DataCleaningTotalAccidents
+WHERE municipio = 'SINOP'
+AND Year = '2020'
+AND Month = '09'
+AND Day = '06'
+
+
+
+------ UPDATING THE DATA -----------
+
+-- Teofilo Otoni
+
+UPDATE #DataCleaningTotalAccidents
+SET newCondicao_metereologica = 'Nublado'
+WHERE condicao_metereologica = 'Neve'
+AND municipio = 'TEOFILO OTONI'
+
+-- Teixeira de Freitas
+
+UPDATE #DataCleaningTotalAccidents
+SET newCondicao_metereologica = 'Nublado'
+WHERE condicao_metereologica = 'Neve'
+AND municipio = 'TEIXEIRA DE FREITAS'
+
+-- Sinop
+
+UPDATE #DataCleaningTotalAccidents
+SET newCondicao_metereologica = 'Céu Claro'
+WHERE condicao_metereologica = 'Neve'
+AND municipio = 'SINOP'
+
+-- VERIFICATION AND NULL VALUES
+
+SELECT * 
+FROM #DataCleaningTotalAccidents
+WHERE newCondicao_metereologica = 'Neve'
+
+
+------ Plena Noite e Sol ---------
+
+SELECT newFase_dia, condicao_metereologica, horario, data_inversa -- (103 rows)
 FROM #DataCleaningTotalAccidents
 WHERE newFase_dia = 'Plena noite'
 AND condicao_metereologica = 'Sol'
-ORDER BY 3 
+ORDER BY 4, 3 
 
-SELECT newFase_dia, condicao_metereologica, horario
-FROM #DataCleaningTotalAccidents
-WHERE newFase_dia = 'Anoitecer'
+-- UPDATING DATA --
+UPDATE #DataCleaningTotalAccidents
+SET newCondicao_metereologica = 'Céu claro'
+WHERE newFase_dia = 'Plena noite'
 AND condicao_metereologica = 'Sol'
-ORDER BY 3 DESC
 
 
 
+SELECT *
+FROM #DataCleaningTotalAccidents
+WHERE newCondicao_metereologica IS NULL
 
 
 

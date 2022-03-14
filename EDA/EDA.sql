@@ -77,7 +77,7 @@ ORDER BY horario
 
 
 -- Most Commmom Conditions
---- Cleaning up fase_dia where has a inconsistence with the hour
+--- Cleaning up fase_dia where has a inconsistence with the hour (Ok)
 
 SELECT DISTINCT(condicao_metereologica)
 FROM #TotalAccidents
