@@ -21,6 +21,13 @@ FROM CTE_TotalAccidents
 SELECT *
 FROM #DataCleaningTotalAccidents
 
+--================ CHECKLIST ======================---
+--Dia, Mês, Ano ( OK )
+-- Horario ( OK )
+-- Fase_dia ( OK )
+-- Condição Metereológica ( Ok )
+
+
 -- DATA_INVERSA
 SELECT data_inversa, CONVERT(DATE,data_inversa)
 FROM #DataCleaningTotalAccidents
@@ -325,18 +332,21 @@ WHERE newFase_dia = 'Plena noite'
 AND condicao_metereologica = 'Sol'
 
 
-
 SELECT *
 FROM #DataCleaningTotalAccidents
-WHERE newCondicao_metereologica IS NULL
 
 
+--=================== DF SAMPLE ===============--
 
-
-
-
-
-
-
-SELECT * 
+WITH CTE_DFSample AS (
+SELECT id, uf, br, km, delegacia, latitude, longitude,
+Data_Inversa2, Day, Month, Year, dia_semana, newHour, newFase_dia, newCondicao_metereologica,
+causa_acidente, tipo_pista, tracado_via, tipo_acidente, classificacao_acidente, 
+pessoas, veiculos, feridos, ilesos, ignorados, feridos_leves, feridos_graves, mortos
 FROM #DataCleaningTotalAccidents
+WHERE uf = 'DF'
+)
+SELECT *
+INTO DF_Sample
+FROM CTE_DFSample
+
