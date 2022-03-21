@@ -26,7 +26,7 @@ FROM #DataCleaningTotalAccidents
 -- Horario ( OK )
 -- Fase_dia ( OK )
 -- Condição Metereológica ( Ok )
-
+-- Replace ',' for '.' in Lat and Long (  )
 
 -- DATA_INVERSA
 SELECT data_inversa, CONVERT(DATE,data_inversa)
